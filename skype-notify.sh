@@ -30,9 +30,10 @@
 # OPTIONS
 
 # -- Here you configure, which words trigger the notifier
-MY_SKYPE_REGEXP_TRIGGER='(these|are|your|trigger|words)'
-# -- and in which files the missed messages are stored
-MY_SKYPE_LOG_FILE=$HOME/skype_missed_messages
+MY_SKYPE_REGEXP_TRIGGER='(jordan)'
+# -- and in which files the missed messages are stored (set to blank for no logging)
+# -- for example: $HOME/skype_missed_messages
+MY_SKYPE_LOG_FILE=""
 
 # -- Set the default param values
 SKYPE_EVENTTYPE='unknown'
@@ -75,13 +76,15 @@ LOWERCASE_MESSAGE=${SKYPE_MESSAGE,,}
 
 # -- See if the message contains any of the trigger keywords
 if [[ $LOWERCASE_MESSAGE =~ $MY_SKYPE_REGEXP_TRIGGER ]]; then
-  # Log it
-  TS=`date`
-  echo "$TS|$SKYPE_DISPLAYNAME ($SKYPE_USERNAME): $SKYPE_MESSAGE" >> "$MY_SKYPE_LOG_FILE"
+  if [ "$MY_SKYPE_LOG_FILE" != "" ]; then
+    # Log it
+    TS=`date`
+    echo "$TS|$SKYPE_DISPLAYNAME ($SKYPE_USERNAME): $SKYPE_MESSAGE" >> "$MY_SKYPE_LOG_FILE"
+  fi
 
   # Show the notification
   if which notify-send > /dev/null ; then
-    notify-send "Skype" "$SKYPE_DISPLAYNAME: $SKYPE_MESSAGE"
+    notify-send "Skype mention by $SKYPE_DISPLAYNAME" "$SKYPE_MESSAGE" -i skype-chat -t 3000
   fi
 fi
 
